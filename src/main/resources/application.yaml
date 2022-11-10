@@ -1,5 +1,5 @@
 server:
-  port: 8080                        #服务器端口号
+  port: 8080   #服务器端口号
   ssl:
     #证书的路径
     key-store: classpath:webrtc.keystore
@@ -8,6 +8,8 @@ server:
     #秘钥库类型
     key-store-type: JKS
 
+####因为rtc必须使用ssh，所以springboot需要使用https协议才可以。
+####浏览器需要使用https访问： https://localhost:8080/
 
 spring:
   #servlet配置信息
@@ -26,7 +28,7 @@ spring:
   mvc:
     hiddenmethod:
       filter:
-        enabled: true                 #开启reset风格——get、post、put、delete
+        enabled: true   #开启reset风格——get、post、put、delete
 
 
   #thymeleaf配置信息

@@ -1,89 +1,106 @@
-//¶Ëµã¶ÔÏó
-let rtcPeerConnection;
 
-//±¾µØÊÓÆµÁ÷
+//ç«¯ç‚¹å¯¹è±¡
+let rtcPeerConnection;
+//æœ¬åœ°è§†é¢‘æµ
 let localMediaStream = null;
 
-//ice·şÎñÆ÷ĞÅÏ¢, ÓÃÓÚ´´½¨ SDP ¶ÔÏó
+//iceæœåŠ¡å™¨ä¿¡æ¯, ç”¨äºåˆ›å»º SDP å¯¹è±¡
 let iceServers = {
-  "iceServers": [
-    // {"url": "stun:stun.l.google.com:19302"},
-    {"urls": ["stun:159.75.239.36:3478"]},
-    {"urls": ["turn:159.75.239.36:3478"], "username": "chr", "credential": "123456"},
-  ]
+    "iceServers": [
+        // {"url": "stun:stun.l.google.com:19302"},
+        // {"urls": ["stun:192.168.2.5:3478"]},
+        {"urls": ["turn:192.168.2.5:3478"], "username": "jiahang", "credential": "123456"},
+    ]
 };
 
-// ±¾µØÒôÊÓÆµĞÅÏ¢, ÓÃÓÚ ´ò¿ª±¾µØÒôÊÓÆµÁ÷
+// æœ¬åœ°éŸ³è§†é¢‘ä¿¡æ¯, ç”¨äº æ‰“å¼€æœ¬åœ°éŸ³è§†é¢‘æµ
 const mediaConstraints = {
-  video: {width: 500, height: 300},
-  audio: true //ÓÉÓÚÃ»ÓĞÂó¿Ë·ç£¬ËùÓĞÈç¹ûÇëÇóÒôÆµ£¬»á±¨´í£¬²»¹ı²»»áÓ°ÏìÊÓÆµÁ÷²¥·Å
+    video: {width: 500, height: 300},
+    audio: true //ç”±äºæ²¡æœ‰éº¦å…‹é£ï¼Œæ‰€æœ‰å¦‚æœè¯·æ±‚éŸ³é¢‘ï¼Œä¼šæŠ¥é”™ï¼Œä¸è¿‡ä¸ä¼šå½±å“è§†é¢‘æµæ’­æ”¾ã€‚
 };
 
-// ´´½¨ offer µÄĞÅÏ¢
+// åˆ›å»º offer çš„ä¿¡æ¯
 const offerOptions = {
-  iceRestart: true,
-  offerToReceiveAudio: true, //ÓÉÓÚÃ»ÓĞÂó¿Ë·ç£¬ËùÓĞÈç¹ûÇëÇóÒôÆµ£¬»á±¨´í£¬²»¹ı²»»áÓ°ÏìÊÓÆµÁ÷²¥·Å
+    iceRestart: true,
+    offerToReceiveAudio: true, //ç”±äºæ²¡æœ‰éº¦å…‹é£ï¼Œæ‰€æœ‰å¦‚æœè¯·æ±‚éŸ³é¢‘ï¼Œä¼šæŠ¥é”™ï¼Œä¸è¿‡ä¸ä¼šå½±å“è§†é¢‘æµæ’­æ”¾ã€‚
 };
-// 1¡¢´ò¿ª±¾µØÒôÊÓÆµÁ÷
+
+// 1ã€æ‰“å¼€æœ¬åœ°éŸ³è§†é¢‘æµ
 const openLocalMedia = (callback) => {
-  console.log('´ò¿ª±¾µØÊÓÆµÁ÷');
-  navigator.mediaDevices.getUserMedia(mediaConstraints)
-    .then(stream => {
-      localMediaStream = stream;
-      //½« ÒôÊÓÆµÁ÷ Ìí¼Óµ½ ¶Ëµã ÖĞ
-      for (const track of localMediaStream.getTracks()) {
-        rtcPeerConnection.addTrack(track, localMediaStream);
-      }
-      callback(localMediaStream);
-    })
+    console.log('æ‰“å¼€æœ¬åœ°è§†é¢‘æµ');
+    navigator.mediaDevices.getUserMedia(mediaConstraints)
+        .then(stream => {
+            localMediaStream = stream;
+            //å°†éŸ³è§†é¢‘æµ,æ·»åŠ åˆ°ç«¯ç‚¹ä¸­
+            for (const track of localMediaStream.getTracks()) {
+                rtcPeerConnection.addTrack(track, localMediaStream);
+            }
+            callback(localMediaStream);
+        })
 }
-// 2¡¢´´½¨ PeerConnection ¶ÔÏó
+
+// 2ã€åˆ›å»º PeerConnection å¯¹è±¡
 const createPeerConnection = () => {
-  rtcPeerConnection = new RTCPeerConnection(iceServers);
+    rtcPeerConnection = new RTCPeerConnection(iceServers);
 }
-// 3¡¢´´½¨ÓÃÓÚ offer µÄ SDP ¶ÔÏó
+
+
+// 3ã€åˆ›å»ºç”¨äº offer çš„ SDP å¯¹è±¡
 const createOffer = (callback) => {
-  // µ÷ÓÃPeerConnectionµÄ CreateOffer ·½·¨´´½¨Ò»¸öÓÃÓÚ offerµÄSDP¶ÔÏó£¬SDP¶ÔÏóÖĞ±£´æµ±Ç°ÒôÊÓÆµµÄÏà¹Ø²ÎÊı¡£
-  rtcPeerConnection.createOffer(offerOptions)
-    .then(sdp => {
-      // ±£´æ×Ô¼ºµÄ SDP ¶ÔÏó
-      rtcPeerConnection.setLocalDescription(sdp)
-        .then(() => callback(sdp));
-    })
-    .catch(() => console.log('createOffer Ê§°Ü'));
+    // è°ƒç”¨PeerConnectionçš„ CreateOffer æ–¹æ³•åˆ›å»ºä¸€ä¸ªç”¨äº offerçš„SDPå¯¹è±¡ï¼ŒSDPå¯¹è±¡ä¸­ä¿å­˜å½“å‰éŸ³è§†é¢‘çš„ç›¸å…³å‚æ•°ã€‚
+    rtcPeerConnection.createOffer(offerOptions)
+        .then(sdp => {
+            // ä¿å­˜è‡ªå·±çš„ SDP å¯¹è±¡
+            rtcPeerConnection.setLocalDescription(sdp)
+                .then(() => callback(sdp));
+        })
+        .catch(() => console.log('createOffer å¤±è´¥'));
 }
-// 4¡¢´´½¨ÓÃÓÚ answer µÄ SDP ¶ÔÏó
+
+
+// 4ã€åˆ›å»ºç”¨äº answer çš„ SDP å¯¹è±¡
 const createAnswer = (callback) => {
-  // µ÷ÓÃPeerConnectionµÄ CreateAnswer ·½·¨´´½¨Ò»¸ö answerµÄSDP¶ÔÏó
-  rtcPeerConnection.createAnswer(offerOptions)
-    .then(sdp => {
-      // ±£´æ×Ô¼ºµÄ SDP ¶ÔÏó
-      rtcPeerConnection.setLocalDescription(sdp)
-        .then(() => callback(sdp));
-    })
-    .catch(() => console.log('createAnswer Ê§°Ü'))
+    // è°ƒç”¨PeerConnectionçš„ CreateAnswer æ–¹æ³•åˆ›å»ºä¸€ä¸ªanswerçš„SDPå¯¹è±¡
+    rtcPeerConnection.createAnswer(offerOptions)
+        .then(sdp => {
+            // ä¿å­˜è‡ªå·±çš„ SDP å¯¹è±¡
+            rtcPeerConnection.setLocalDescription(sdp)
+                .then(() => callback(sdp));
+        })
+        .catch(() => console.log('createAnswer å¤±è´¥'))
 }
-// 5¡¢±£´æÔ¶³ÌµÄ SDP ¶ÔÏó
+
+
+// 5ã€ä¿å­˜è¿œç¨‹çš„ SDP å¯¹è±¡
 const saveSdp = (answerSdp, callback) => {
-  rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(answerSdp))
-    .then(callback);
+    rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(answerSdp))
+        .then(callback);
 }
-// 6¡¢±£´æ candidate ĞÅÏ¢
+
+
+// 6ã€ä¿å­˜ candidate ä¿¡æ¯
 const saveIceCandidate = (candidate) => {
-  let iceCandidate = new RTCIceCandidate(candidate);
-  rtcPeerConnection.addIceCandidate(iceCandidate)
-    .then(() => console.log('addIceCandidate ³É¹¦'));
+    let iceCandidate = new RTCIceCandidate(candidate);
+    rtcPeerConnection.addIceCandidate(iceCandidate)
+        .then(() => console.log('addIceCandidate æˆåŠŸ'));
 }
-// 7¡¢ÊÕ¼¯ candidate µÄ»Øµ÷
+
+
+// 7ã€æ”¶é›† candidate çš„å›è°ƒ
 const bindOnIceCandidate = (callback) => {
-  // °ó¶¨ ÊÕ¼¯ candidate µÄ»Øµ÷
-  rtcPeerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      callback(event.candidate);
-    }
-  };
+    // ç»‘å®š æ”¶é›† candidate çš„å›è°ƒ
+    rtcPeerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            callback(event.candidate);
+        }
+    };
 };
-// 8¡¢»ñµÃ Ô¶³ÌÊÓÆµÁ÷ µÄ»Øµ÷
+
+
+// 8ã€è·å¾— è¿œç¨‹è§†é¢‘æµ çš„å›è°ƒ
 const bindOnTrack = (callback) => {
-  rtcPeerConnection.ontrack = (event) => callback(event.streams[0]);
+    rtcPeerConnection.ontrack = (event) => callback(event.streams[0]);
 };
+
+
+

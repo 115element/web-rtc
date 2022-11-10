@@ -9,10 +9,9 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import java.lang.reflect.Modifier;
 
 @Configuration(proxyBeanMethods = false)
-public class GsonConfig
-{
+public class GsonConfig {
     @Bean
-    GsonHttpMessageConverter gsonHttpMessageConverter(){
+    public GsonHttpMessageConverter gsonHttpMessageConverter() {
 
         //Spring提供了Gson的转换器对象
         GsonHttpMessageConverter converter = new GsonHttpMessageConverter();

@@ -6,10 +6,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Configuration
-//开启websocket支持
-@EnableWebSocket
-public class WebsocketConfig
-{
+@EnableWebSocket //开启websocket支持
+public class WebsocketConfig {
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();
